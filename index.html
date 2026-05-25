@@ -2,291 +2,369 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Городской Транспорт</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
+        /* Оригинальная палитра приложения: глубокий темный фон Telegram */
         body {
-            background-color: #161d25;
-            color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0e1621;
+            color: #f5f6f7;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
             user-select: none;
             -webkit-user-select: none;
+            overflow-x: hidden;
         }
         
-        /* Шапка с красной полосой */
-        .top-bar {
-            position: relative;
-            padding: 15px;
-            text-align: center;
-            font-size: 17px;
-            font-weight: 500;
-            background-color: #161d25;
-            border-bottom: 2px solid #b71c1c;
+        /* Верхняя тонкая статусная линия (фирменный стиль) */
+        .top-line-indicator {
+            height: 2px;
+            background-color: #e53935;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 9999;
         }
 
-        .screen { display: none; padding: 16px; box-sizing: border-box; }
+        .screen { 
+            display: none; 
+            padding: 16px; 
+            margin-top: 2px;
+            box-sizing: border-box; 
+            min-height: 100vh;
+        }
         .active { display: block; }
 
-        /* ЭКРАН 1: Ввод кода */
-        .code-screen-container { display: flex; flex-direction: column; align-items: center; margin-top: 40px; }
-        .code-boxes { display: flex; gap: 8px; margin-bottom: 40px; }
-        .box { 
-            width: 42px; height: 52px; border: 1px solid #2d3846; border-radius: 6px; 
-            background: transparent; text-align: center; font-size: 24px; line-height: 52px; font-weight: bold; 
+        /* --- ЭКРАН 1: Ввод 6-значного кода --- */
+        .code-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 60px;
         }
-        .hint-text { font-size: 18px; color: #e0e0e0; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-        .keyboard { 
-            position: fixed; bottom: 20px; left: 0; right: 0; 
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background-color: #2b3541; padding: 8px 16px;
+        .code-title {
+            font-size: 16px;
+            color: #7e8b98;
+            margin-bottom: 24px;
+            font-weight: 400;
         }
-        .key { background: #ffffff; color: #000000; border: none; padding: 18px; font-size: 24px; text-align: center; cursor: pointer; outline: none; }
-        .key:active { background: #d0d0d0; }
-        .key-special { background: #1c242c; color: #ffffff; font-size: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; }
+        .boxes-row { display: flex; gap: 10px; margin-bottom: 45px; }
+        .box-cell { 
+            width: 44px; height: 54px; 
+            border: 1px solid #2b394a; border-radius: 6px; 
+            background: transparent; text-align: center; 
+            font-size: 26px; line-height: 54px; font-weight: 500; color: #ffffff;
+        }
+        .stickers-hint {
+            font-size: 15px; color: #5288c1; 
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+        }
+        .num-keyboard { 
+            position: fixed; bottom: 0; left: 0; right: 0; 
+            display: grid; grid-template-columns: repeat(3, 1fr); 
+            background-color: #0e1621; border-top: 1px solid #1d2a39;
+        }
+        .num-key { 
+            background: #17212b; color: #ffffff; border: 0.5px solid #0e1621; 
+            padding: 22px; font-size: 24px; text-align: center; outline: none;
+        }
+        .num-key:active { background: #202b36; }
+        .num-key-dark { background: #111923; font-size: 14px; color: #7e8b98; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
-        /* ЭКРАН 2: Конструктор билета */
-        .ticket-title-block { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 400; margin-bottom: 24px; color: #e2e8f0; }
-        .section-label { color: #5c6b79; font-size: 13px; margin-bottom: 4px; }
+        /* --- ЭКРАН 2: Конструктор (Форма) --- */
+        .form-header {
+            font-size: 20px; font-weight: 500; padding: 8px 0 20px 0; color: #ffffff;
+        }
+        .control-group { margin-bottom: 22px; }
+        .input-wrapper {
+            position: relative; border-bottom: 1px solid #232e3c; padding: 6px 0 10px 0; margin-bottom: 18px;
+        }
+        .field-icon {
+            position: absolute; left: 0; top: 8px; width: 24px; color: #6c7883; font-size: 18px; text-align: center;
+        }
+        .field-box { padding-left: 36px; }
+        .field-caption { color: #517ca3; font-size: 12px; font-weight: 400; margin-bottom: 2px; }
+        .field-input {
+            background: transparent; border: none; color: #ffffff; font-size: 16px; width: 100%; outline: none; font-family: inherit;
+        }
         
-        .slider-container { margin-bottom: 24px; }
-        .slider-wrapper { position: relative; margin: 15px 10px; }
-        .slider-track { height: 2px; background: #334155; width: 100%; position: absolute; top: 50%; transform: translateY(-50%); }
-        .slider-dots { display: flex; justify-content: space-between; position: relative; z-index: 2; }
-        .dot { width: 8px; height: 8px; background: #334155; border-radius: 50%; cursor: pointer; position: relative; }
-        .dot.active-dot { background: #b71c1c; box-shadow: 0 0 0 4px rgba(183,28,28,0.2); }
-        .dot::after { content: attr(data-val); position: absolute; top: 14px; left: 50%; transform: translateX(-50%); color: #64748b; font-size: 12px; }
-        
-        .ticket-qty-badge { border: 2px solid #ffffff; border-radius: 4px; padding: 1px 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-right: 8px; }
-        .data-row { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-bottom: 1px solid #1f2937; }
-        .row-icon { font-size: 20px; color: #64748b; margin-top: 2px; width: 24px; text-align: center; }
-        .row-content { flex-grow: 1; display: flex; flex-direction: column; }
-        .input-editable { background: transparent; border: none; color: #ffffff; font-size: 15px; outline: none; padding: 2px 0; font-family: inherit; width: 100%; }
-        
-        .switch-container { background-color: #241619; border-radius: 4px; padding: 16px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .switch-text { font-size: 15px; color: #f1f5f9; }
-        .switch-toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .switch-toggle input { opacity: 0; width: 0; height: 0; }
-        .slider-round { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .3s; border-radius: 24px; }
-        .slider-round:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
-        input:checked + .slider-round { background-color: #b71c1c; }
-        input:checked + .slider-round:before { transform: translateX(20px); }
-        
-        .pay-btn { position: fixed; bottom: 0; left: 0; right: 0; background-color: #2cb742; color: #ffffff; text-align: center; padding: 16px; font-size: 16px; font-weight: 500; border: none; width: 100%; cursor: pointer; box-sizing: border-box; }
+        /* Слайдер количества */
+        .qty-header { display: flex; align-items: center; gap: 8px; color: #517ca3; font-size: 13px; margin-bottom: 16px; }
+        .qty-num-badge { border: 1.5px solid #ffffff; border-radius: 3px; padding: 0px 5px; font-size: 12px; font-weight: bold; color: #ffffff; }
+        .slider-bar-track { position: relative; margin: 10px 8px 30px 8px; height: 2px; background: #232e3c; }
+        .slider-points { display: flex; justify-content: space-between; position: absolute; width: 100%; top: -3px; }
+        .point-dot { width: 8px; height: 8px; background: #232e3c; border-radius: 50%; position: relative; }
+        .point-dot.selected { background: #e53935; }
+        .point-dot::after {
+            content: attr(data-label); position: absolute; top: 14px; left: 50%; transform: translateX(-50%); color: #6c7883; font-size: 12px;
+        }
+        .point-dot.selected::after { color: #ffffff; }
 
-        /* ЭКРАН 3: ОРИГИНАЛЬНЫЙ КУПЛЕННЫЙ БИЛЕТ */
-        .ticket-screen { padding: 8px 16px; background-color: #161d25; }
-        .timer-row { display: flex; align-items: center; gap: 8px; font-size: 16px; color: #ffffff; margin: 10px 0; }
-        .timer-icon { font-size: 18px; color: #94a3b8; }
-        .divider { border-top: 1px dashed #2d3846; margin: 16px 0; }
+        /* Переключатель подписки */
+        .sub-row {
+            display: flex; justify-content: space-between; align-items: center; background: #17212b; padding: 14px 16px; border-radius: 8px; margin-top: 25px;
+        }
+        .sub-label { font-size: 15px; color: #ffffff; }
+        .toggle-btn { position: relative; display: inline-block; width: 40px; height: 22px; }
+        .toggle-btn input { opacity: 0; width: 0; height: 0; }
+        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2b394a; transition: .2s; border-radius: 22px; }
+        .toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+        input:checked + .toggle-slider { background-color: #e53935; }
+        input:checked + .toggle-slider:before { transform: translateX(18px); }
         
-        .control-line { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
-        .ticket-num { color: #e53935; font-size: 18px; font-weight: bold; font-family: monospace, sans-serif; }
-        .control-badge { color: #94a3b8; font-size: 14px; display: flex; align-items: center; gap: 6px; }
-        .control-icon-grey { color: #5c6b79; font-size: 16px; }
+        .action-pay-btn {
+            position: fixed; bottom: 0; left: 0; right: 0; background-color: #2ca041; color: #ffffff; text-align: center; padding: 18px; font-size: 15px; font-weight: 500; border: none; width: 100%; cursor: pointer;
+        }
 
-        .info-block { margin-bottom: 20px; }
-        .info-label { color: #5c6b79; font-size: 13px; margin-bottom: 4px; }
-        .info-value { color: #ffffff; font-size: 16px; font-weight: 400; word-break: break-word; }
-        .route-highlight { font-size: 18px; font-weight: 500; color: #ffffff; }
+        /* --- ЭКРАН 3: ТОЧНЫЙ ОРИГИНАЛЬНЫЙ БИЛЕТ (1-в-1) --- */
+        .ticket-view-layout { padding: 12px 16px; background-color: #0e1621; }
+        .live-timer-row { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #f5f6f7; margin: 6px 0 14px 0; }
+        .live-timer-row .clock-icon { color: #7e8b98; font-size: 16px; }
+        
+        .dashed-line { border-top: 1px dashed #232e3c; margin: 14px 0; width: 100%; }
+        
+        .ticket-meta-line { display: flex; justify-content: space-between; align-items: center; margin: 12px 0 24px 0; }
+        .red-num { color: #ee6055; font-size: 18px; font-weight: bold; letter-spacing: 0.5px; }
+        .badge-ctrl {
+            border: 1px solid #2b394a; color: #7e8b98; font-size: 13px; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 6px; background: transparent;
+        }
+
+        .meta-block { margin-bottom: 22px; }
+        .meta-title { color: #6c7883; font-size: 13px; margin-bottom: 3px; font-weight: 400; }
+        .meta-val { color: #ffffff; font-size: 15px; font-weight: 400; line-height: 1.4; }
+        .meta-val-bold { font-size: 18px; font-weight: 500; color: #ffffff; }
+
+        /* Фиксированное меню кнопок в самом низу экрана билета */
+        .ticket-bottom-menu {
+            position: fixed; bottom: 0; left: 0; right: 0; background: #0e1621; padding: 12px 16px 20px 16px; display: flex; flex-direction: column; gap: 10px;
+        }
+        .menu-btn-green {
+            background: #2ca041; color: #ffffff; border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 500; text-align: center; width: 100%; box-sizing: border-box;
+        }
+        .menu-btn-outline {
+            background: transparent; color: #5288c1; border: 1px solid #2b394a; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 500; text-align: center; width: 100%; box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
-    <div class="top-bar" id="app-header">Городской Транспорт</div>
+    <div class="top-line-indicator"></div>
 
     <div id="screen-code" class="screen active">
-        <div class="code-screen-container">
-            <div class="code-boxes">
-                <div class="box" id="b1"></div><div class="box" id="b2"></div><div class="box" id="b3"></div>
-                <div class="box" id="b4"></div><div class="box" id="b5"></div><div class="box" id="b6"></div>
+        <div class="code-container">
+            <div class="code-title">Введите код с наклейки</div>
+            <div class="boxes-row">
+                <div class="box-cell" id="c1"></div><div class="box-cell" id="c2"></div><div class="box-cell" id="c3"></div>
+                <div class="box-cell" id="c4"></div><div class="box-cell" id="c5"></div><div class="box-cell" id="c6"></div>
             </div>
-            <div class="hint-text"><span style="font-size:15px;">⋮⋮</span> Введите код с наклейки</div>
+            <div class="stickers-hint">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
+                <span>Показать где наклейка</span>
+            </div>
         </div>
-        <div class="keyboard">
-            <button class="key" onclick="pressNum(1)">1</button><button class="key" onclick="pressNum(2)">2</button><button class="key" onclick="pressNum(3)">3</button>
-            <button class="key" onclick="pressNum(4)">4</button><button class="key" onclick="pressNum(5)">5</button><button class="key" onclick="pressNum(6)">6</button>
-            <button class="key" onclick="pressNum(7)">7</button><button class="key" onclick="pressNum(8)">8</button><button class="key" onclick="pressNum(9)">9</button>
-            <div class="key key-special"><span>Сканировать</span><span style="font-size:16px;">⋮⋮</span></div>
-            <button class="key" onclick="pressNum(0)">0</button>
-            <button class="key" style="background:#eaedf1;" onclick="pressDelete()">⌫</button>
+        <div class="num-keyboard">
+            <button class="num-key" onclick="tapKey(1)">1</button><button class="num-key" onclick="tapKey(2)">2</button><button class="num-key" onclick="tapKey(3)">3</button>
+            <button class="num-key" onclick="tapKey(4)">4</button><button class="num-key" onclick="tapKey(5)">5</button><button class="num-key" onclick="tapKey(6)">6</button>
+            <button class="num-key" onclick="tapKey(7)">7</button><button class="num-key" onclick="tapKey(8)">8</button><button class="num-key" onclick="tapKey(9)">9</button>
+            <div class="num-key num-key-dark"><span>Сканировать</span><strong>[ ]</strong></div>
+            <button class="num-key" onclick="tapKey(0)">0</button>
+            <button class="num-key" style="background:#131c26; color:#7e8b98;" onclick="tapDelete()">⌫</button>
         </div>
     </div>
 
     <div id="screen-data" class="screen">
-        <div class="ticket-title-block">📋 Данные билета</div>
-        <div class="slider-container">
-            <div class="section-label" style="display: flex; align-items: center;">
-                <span class="ticket-qty-badge" id="qty-badge">1</span> Количество билетов
+        <div class="form-header">Параметры поездки</div>
+        
+        <div class="control-group">
+            <div class="qty-header">
+                <span class="qty-num-badge" id="badge-count">1</span> Количество билетов
             </div>
-            <div class="slider-wrapper">
-                <div class="slider-track"></div>
-                <div class="slider-dots">
-                    <div class="dot active-dot" data-val="1" onclick="setQty(1)"></div>
-                    <div class="dot" data-val="2" onclick="setQty(2)"></div>
-                    <div class="dot" data-val="3" onclick="setQty(3)"></div>
-                    <div class="dot" data-val="4" onclick="setQty(4)"></div>
-                    <div class="dot" data-val="5" onclick="setQty(5)"></div>
+            <div class="slider-bar-track">
+                <div class="slider-points">
+                    <div class="point-dot selected" data-label="1" onclick="selectPointsCount(1)"></div>
+                    <div class="point-dot" data-label="2" onclick="selectPointsCount(2)"></div>
+                    <div class="point-dot" data-label="3" onclick="selectPointsCount(3)"></div>
+                    <div class="point-dot" data-label="4" onclick="selectPointsCount(4)"></div>
+                    <div class="point-dot" data-label="5" onclick="selectPointsCount(5)"></div>
                 </div>
             </div>
         </div>
-        <div class="data-row">
-            <div class="row-icon">👤</div>
-            <div class="row-content">
-                <div class="section-label">Перевозчик</div>
-                <input type="text" id="inp-carrier" class="input-editable" value="ООО &quot;СКАД&quot;">
+
+        <div class="input-wrapper">
+            <div class="field-icon">👤</div>
+            <div class="field-box">
+                <div class="field-caption">Перевозчик</div>
+                <input type="text" id="v-carrier" class="field-input" value="ООО &quot;СКАД&quot;">
             </div>
         </div>
-        <div class="data-row">
-            <div class="row-icon">🚌</div>
-            <div class="row-content">
-                <div class="section-label">Маршрут (пример: 85, Даурская - Сельхозкомплекс)</div>
-                <input type="text" id="inp-route" class="input-editable" value="85, Даурская - Сельхозкомплекс">
-                <div class="section-label" style="margin-top: 6px;">Госномер автомобиля</div>
-                <input type="text" id="inp-plate" class="input-editable" value="р340тк124" style="color: #94a3b8;">
+
+        <div class="input-wrapper">
+            <div class="field-icon">🚌</div>
+            <div class="field-box">
+                <div class="field-caption">Маршрут</div>
+                <input type="text" id="v-route" class="field-input" value="85, Даурская - Сельхозкомплекс">
             </div>
         </div>
-        <div class="data-row">
-            <div class="row-icon">₽</div>
-            <div class="row-content">
-                <div class="section-label">Тариф</div>
-                <input type="text" id="inp-tariff" class="input-editable" value="Полный - 48.00 ₽">
+
+        <div class="input-wrapper">
+            <div class="field-icon">🔢</div>
+            <div class="field-box">
+                <div class="field-caption">Госномер автомобиля</div>
+                <input type="text" id="v-plate" class="field-input" value="р340тк124">
             </div>
         </div>
-        <div class="switch-container">
-            <div class="switch-text">Создать подписку?</div>
-            <label class="switch-toggle"><input type="checkbox" id="inp-sub"><span class="slider-round"></span></label>
+
+        <div class="input-wrapper">
+            <div class="field-icon">₽</div>
+            <div class="field-box">
+                <div class="field-caption">Тариф</div>
+                <input type="text" id="v-tariff" class="field-input" value="Полный - 48.00 ₽">
+            </div>
         </div>
-        <button class="pay-btn" id="btn-pay" onclick="showLiveTicket()">ОПЛАТИТЬ - 48.00 ₽</button>
+
+        <div class="sub-row">
+            <div class="sub-label">Создать подписку?</div>
+            <label class="toggle-btn"><input type="checkbox"><span class="toggle-slider"></span></label>
+        </div>
+
+        <button class="action-pay-btn" id="pay-submit-label" onclick="buildAndRenderTicket()">ОПЛАТИТЬ - 48.00 ₽</button>
     </div>
 
-    <div id="screen-ticket" class="screen ticket-screen">
-        <div class="timer-row">
-            <span class="timer-icon">⏱</span> <span>Действует: <span id="timer-sec">14</span> сек.</span>
+    <div id="screen-ticket" class="screen ticket-view-layout">
+        <div class="live-timer-row">
+            <span class="clock-icon">⏳</span>
+            <span>Действует: <span id="dyn-sec" style="font-weight: 500;">14</span> <span id="dyn-word">сек.</span></span>
         </div>
-        <div class="divider"></div>
-        <div class="control-line">
-            <span class="ticket-num" id="lbl-ticket-num">№ 483195724</span>
-            <span class="control-badge">
-                <span class="control-icon-grey">👤</span> Контроль
-            </span>
+        
+        <div class="dashed-line"></div>
+        
+        <div class="ticket-meta-line">
+            <span class="red-num" id="render-num">№ 532194875</span>
+            <span class="badge-ctrl">👤 Контроль</span>
         </div>
-        <div class="info-block">
-            <div class="info-label">Перевозчик</div>
-            <div class="info-value" id="lbl-carrier"></div>
+
+        <div class="meta-block">
+            <div class="meta-title">Перевозчик</div>
+            <div class="meta-val" id="render-carrier">ООО "СКАД"</div>
         </div>
-        <div class="info-block">
-            <div class="info-label">Маршрут</div>
-            <div class="info-value route-highlight" id="lbl-route"></div>
-            <div class="info-value route-highlight" id="lbl-plate" style="margin-top: 2px;"></div>
+
+        <div class="meta-block">
+            <div class="meta-title">Маршрут</div>
+            <div class="meta-val meta-val-bold" id="render-route">85, Даурская - Сельхозкомплекс</div>
+            <div class="meta-val meta-val-bold" id="render-plate" style="margin-top: 1px;">р340тк124</div>
         </div>
-        <div class="info-block">
-            <div class="info-label">Стоимость</div>
-            <div class="info-value" id="lbl-cost"></div>
+
+        <div class="meta-block">
+            <div class="meta-title">Стоимость</div>
+            <div class="meta-val" id="render-cost">1 шт., Полный - 48.00 ₽</div>
         </div>
-        <div class="info-block">
-            <div class="info-label">Дата покупки</div>
-            <div class="info-value" id="lbl-date"></div>
+
+        <div class="meta-block">
+            <div class="meta-title">Дата покупки</div>
+            <div class="meta-val" id="render-date">25 мая 2026 г.</div>
         </div>
-        <div class="info-block">
-            <div class="info-label">Время покупки</div>
-            <div class="info-value" id="lbl-time"></div>
+
+        <div class="meta-block">
+            <div class="meta-title">Время покупки</div>
+            <div class="meta-val" id="render-time">16:34</div>
         </div>
-        <div class="divider"></div>
+
+        <div class="dashed-line" style="margin-top: 25px;"></div>
+
+        <div class="ticket-bottom-menu">
+            <button class="menu-btn-green">Предъявить билет</button>
+            <button class="menu-btn-outline">Предъявить QR</button>
+            <button class="menu-btn-outline">Предъявить билет в чат</button>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
 
-        let currentCode = "";
-        let selectedQty = 1;
-        let basePrice = 48.00;
+        let inputString = "";
+        let globalQty = 1;
+        const singleCost = 48.00;
 
-        function pressNum(num) {
-            if (currentCode.length < 6) {
-                currentCode += num;
-                document.getElementById("b" + currentCode.length).innerText = num;
-                if (currentCode.length === 6) {
+        function tapKey(n) {
+            if (inputString.length < 6) {
+                inputString += n;
+                document.getElementById("c" + inputString.length).innerText = n;
+                if (inputString.length === 6) {
                     setTimeout(() => {
                         document.getElementById("screen-code").classList.remove("active");
                         document.getElementById("screen-data").classList.add("active");
-                    }, 250);
+                    }, 200);
                 }
             }
         }
 
-        function pressDelete() {
-            if (currentCode.length > 0) {
-                document.getElementById("b" + currentCode.length).innerText = "";
-                currentCode = currentCode.slice(0, -1);
+        function tapDelete() {
+            if (inputString.length > 0) {
+                document.getElementById("c" + inputString.length).innerText = "";
+                inputString = inputString.slice(0, -1);
             }
         }
 
-        function setQty(qty) {
-            selectedQty = qty;
-            document.getElementById("qty-badge").innerText = qty;
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, index) => {
-                if (index + 1 === qty) dot.classList.add('active-dot');
-                else dot.classList.remove('active-dot');
+        function selectPointsCount(count) {
+            globalQty = count;
+            document.getElementById("badge-count").innerText = count;
+            const dots = document.querySelectorAll('.point-dot');
+            dots.forEach((dot, idx) => {
+                if (idx + 1 === count) dot.classList.add('selected');
+                else dot.classList.remove('selected');
             });
-            let currentTotal = (basePrice * qty).toFixed(2);
-            document.getElementById("btn-pay").innerText = "ОПЛАТИТЬ - " + currentTotal + " ₽";
+            let computed = (singleCost * count).toFixed(2);
+            document.getElementById("pay-submit-label").innerText = "ОПЛАТИТЬ - " + computed + " ₽";
         }
 
-        // Переключение на экран активного билета с текущими введенными данными
-        function showLiveTicket() {
-            // 1. Извлекаем данные из полей ввода конструктора
-            const carrier = document.getElementById("inp-carrier").value;
-            const route = document.getElementById("inp-route").value;
-            const plate = document.getElementById("inp-plate").value;
-            const tariff = document.getElementById("inp-tariff").value;
+        function buildAndRenderTicket() {
+            // Считывание значений из конфигуратора
+            const carrierVal = document.getElementById("v-carrier").value;
+            const routeVal = document.getElementById("v-route").value;
+            const plateVal = document.getElementById("v-plate").value;
+            const tariffVal = document.getElementById("v-tariff").value;
 
-            // 2. Рассчитываем время и дату покупки в реальном времени
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const timeStr = hours + ":" + minutes;
+            // Время и календарные данные
+            const currentObj = new Date();
+            const padH = String(currentObj.getHours()).padStart(2, '0');
+            const padM = String(currentObj.getMinutes()).padStart(2, '0');
+            
+            const monthsArray = ["янв.", "фев.", "мар.", "апр.", "мая", "июня", "июля", "авг.", "сент.", "окт.", "нояб.", "дек."];
+            const structuredDate = currentObj.getDate() + " " + monthsArray[currentObj.getMonth()] + " " + currentObj.getFullYear() + " г.";
 
-            const months = ["янв.", "фев.", "мар.", "апр.", "мая", "июня", "июля", "авг.", "сент.", "окт.", "нояб.", "дек."];
-            const dateStr = now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear() + " г.";
+            // Заполнение шаблона билета данными пользователя
+            document.getElementById("render-carrier").innerText = carrierVal;
+            document.getElementById("render-route").innerText = routeVal;
+            document.getElementById("render-plate").innerText = plateVal;
+            document.getElementById("render-cost").innerText = globalQty + " шт., " + tariffVal;
+            document.getElementById("render-date").innerText = structuredDate;
+            document.getElementById("render-time").innerText = padH + ":" + padM;
+            document.getElementById("render-num").innerText = "№ " + Math.floor(100000000 + Math.random() * 900000000);
 
-            // 3. Генерируем случайный номер билета
-            const randomTicketNum = "№ " + Math.floor(100000000 + Math.random() * 900000000);
-
-            // 4. Подставляем данные в разметку экрана билета
-            document.getElementById("lbl-carrier").innerText = carrier;
-            document.getElementById("lbl-route").innerText = route;
-            document.getElementById("lbl-plate").innerText = plate;
-            document.getElementById("lbl-cost").innerText = selectedQty + " шт., " + tariff;
-            document.getElementById("lbl-date").innerText = dateStr;
-            document.getElementById("lbl-time").innerText = timeStr;
-            document.getElementById("lbl-ticket-num").innerText = randomTicketNum;
-
-            // 5. Переключаем экран видимости
+            // Переключение экранов мини-приложения
             document.getElementById("screen-data").classList.remove("active");
             document.getElementById("screen-ticket").classList.add("active");
 
-            // 6. Запускаем таймер действия билета (как на скриншоте — 14 секунд)
-            let secondsLeft = 14;
-            document.getElementById("timer-sec").innerText = secondsLeft;
-            
-            const interval = setInterval(() => {
-                secondsLeft--;
-                document.getElementById("timer-sec").innerText = secondsLeft;
-                if (secondsLeft <= 0) {
-                    clearInterval(interval);
-                    tg.close(); // Автоматически закрываем мини-приложение по истечении времени
+            // Запуск таймера обратного отсчета (показывает 14 сек на старте)
+            let remaining = 14;
+            const liveCounter = setInterval(() => {
+                remaining--;
+                document.getElementById("dyn-sec").innerText = remaining;
+                
+                // Склонение слова сек/секунда
+                if (remaining === 1) {
+                    document.getElementById("dyn-word").innerText = "сек.";
+                }
+
+                if (remaining <= 0) {
+                    clearInterval(liveCounter);
+                    tg.close(); // Закрываем по истечении времени контроля
                 }
             }, 1000);
-
-            // Дополнительно отправляем информацию боту на случай, если нужно сохранить лог
-            const payload = {
-                qty: selectedQty, route: route, carrier: carrier, plate: plate, tariff: tariff, time_purchase: timeStr
-            };
-            tg.sendData(JSON.stringify(payload));
         }
     </script>
 </body>
