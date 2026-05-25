@@ -16,7 +16,6 @@
             -webkit-user-select: none;
         }
         
-        /* Шапка с красной линией вверху как на оригинале */
         .top-bar {
             position: relative;
             padding: 15px;
@@ -31,109 +30,63 @@
         .active { display: block; }
 
         /* ЭКРАН 1: Ввод кода */
-        .code-screen-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 40px;
-        }
+        .code-screen-container { display: flex; flex-direction: column; align-items: center; margin-top: 40px; }
         .code-boxes { display: flex; gap: 8px; margin-bottom: 40px; }
         .box { 
-            width: 42px; height: 52px; 
-            border: 1px solid #2d3846; border-radius: 6px; 
-            background: transparent; text-align: center; 
-            font-size: 24px; line-height: 52px; font-weight: bold; 
+            width: 42px; height: 52px; border: 1px solid #2d3846; border-radius: 6px; 
+            background: transparent; text-align: center; font-size: 24px; line-height: 52px; font-weight: bold; 
         }
-        .hint-text {
-            font-size: 18px; color: #e0e0e0; margin-bottom: 20px;
-            display: flex; align-items: center; gap: 8px;
-        }
+        .hint-text { font-size: 18px; color: #e0e0e0; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .keyboard { 
             position: fixed; bottom: 20px; left: 0; right: 0; 
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            gap: 1px; background-color: #2b3541; padding: 8px 16px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background-color: #2b3541; padding: 8px 16px;
         }
-        .key { 
-            background: #ffffff; color: #000000; border: none; 
-            padding: 18px; font-size: 24px; font-weight: 400; 
-            text-align: center; cursor: pointer; outline: none;
-        }
+        .key { background: #ffffff; color: #000000; border: none; padding: 18px; font-size: 24px; text-align: center; cursor: pointer; outline: none; }
         .key:active { background: #d0d0d0; }
-        .key-special { 
-            background: #1c242c; color: #ffffff; font-size: 12px; 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px;
-        }
+        .key-special { background: #1c242c; color: #ffffff; font-size: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 2px; }
 
         /* ЭКРАН 2: Конструктор билета */
-        .ticket-title-block {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 22px; font-weight: 400; margin-bottom: 24px; color: #e2e8f0;
-        }
+        .ticket-title-block { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 400; margin-bottom: 24px; color: #e2e8f0; }
         .section-label { color: #5c6b79; font-size: 13px; margin-bottom: 4px; }
-        
-        /* Стилизация ползунка количества билетов */
         .slider-container { margin-bottom: 24px; }
         .slider-wrapper { position: relative; margin: 15px 10px; }
         .slider-track { height: 2px; background: #334155; width: 100%; position: absolute; top: 50%; transform: translateY(-50%); }
         .slider-dots { display: flex; justify-content: space-between; position: relative; z-index: 2; }
         .dot { width: 8px; height: 8px; background: #334155; border-radius: 50%; cursor: pointer; position: relative; }
         .dot.active-dot { background: #b71c1c; box-shadow: 0 0 0 4px rgba(183,28,28,0.2); }
-        .dot::after {
-            content: attr(data-val); position: absolute; top: 14px; left: 50%;
-            transform: translateX(-50%); color: #64748b; font-size: 12px;
-        }
-        .dot.active-dot::after { color: #94a3b8; }
-        .ticket-qty-badge {
-            border: 2px solid #ffffff; border-radius: 4px; padding: 1px 6px;
-            font-size: 14px; font-weight: bold; display: inline-block; margin-right: 8px;
-        }
-
-        /* Поля ввода данных */
-        .data-row {
-            display: flex; align-items: flex-start; gap: 16px;
-            padding: 16px 0; border-bottom: 1px solid #1f2937;
-        }
+        .dot::after { content: attr(data-val); position: absolute; top: 14px; left: 50%; transform: translateX(-50%); color: #64748b; font-size: 12px; }
+        .ticket-qty-badge { border: 2px solid #ffffff; border-radius: 4px; padding: 1px 6px; font-size: 14px; font-weight: bold; display: inline-block; margin-right: 8px; }
+        .data-row { display: flex; align-items: flex-start; gap: 16px; padding: 16px 0; border-bottom: 1px solid #1f2937; }
         .row-icon { font-size: 20px; color: #64748b; margin-top: 2px; width: 24px; text-align: center; }
         .row-content { flex-grow: 1; display: flex; flex-direction: column; }
-        .input-editable {
-            background: transparent; border: none; color: #ffffff;
-            font-size: 15px; outline: none; padding: 2px 0; font-family: inherit; width: 100%;
-        }
-
-        /* Переключатель подписки */
-        .switch-container {
-            background-color: #241619; border-radius: 4px;
-            padding: 16px; margin-top: 20px; display: flex;
-            justify-content: space-between; align-items: center;
-        }
+        .input-editable { background: transparent; border: none; color: #ffffff; font-size: 15px; outline: none; padding: 2px 0; font-family: inherit; width: 100%; }
+        .switch-container { background-color: #241619; border-radius: 4px; padding: 16px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
         .switch-text { font-size: 15px; color: #f1f5f9; }
-        .switch-toggle {
-            position: relative; inline-block; width: 44px; height: 24px;
-        }
+        .switch-toggle { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch-toggle input { opacity: 0; width: 0; height: 0; }
-        .slider-round {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #475569; transition: .3s; border-radius: 24px;
-        }
-        .slider-round:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%;
-        }
+        .slider-round { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .3s; border-radius: 24px; }
+        .slider-round:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider-round { background-color: #b71c1c; }
         input:checked + .slider-round:before { transform: translateX(20px); }
+        .pay-btn { position: fixed; bottom: 0; left: 0; right: 0; background-color: #2cb742; color: #ffffff; text-align: center; padding: 16px; font-size: 16px; font-weight: 500; border: none; width: 100%; cursor: pointer; box-sizing: border-box; }
 
-        /* Зеленая кнопка Оплатить */
-        .pay-btn {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background-color: #2cb742; color: #ffffff; text-align: center;
-            padding: 16px; font-size: 16px; font-weight: 500; border: none;
-            width: 100%; cursor: pointer; box-sizing: border-box;
-        }
+        /* ЭКРАН 3: ТОЧНЫЙ ОРИГИНАЛЬНЫЙ БИЛЕТ */
+        .ticket-screen { padding: 20px 16px; background-color: #161d25; }
+        .timer-row { display: flex; align-items: center; gap: 8px; font-size: 16px; color: #ffffff; margin-bottom: 20px; }
+        .timer-icon { font-size: 18px; }
+        .divider { border-top: 1px dashed #2d3846; margin: 16px 0; }
+        .control-line { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+        .ticket-num { color: #e53935; font-size: 18px; font-weight: bold; }
+        .control-badge { background-color: #1e293b; color: #94a3b8; font-size: 12px; padding: 4px 8px; border-radius: 4px; display: flex; align-items: center; gap: 4px; }
+        .info-block { margin-bottom: 20px; }
+        .info-label { color: #64748b; font-size: 13px; margin-bottom: 4px; }
+        .info-value { color: #ffffff; font-size: 16px; font-weight: 500; word-break: break-word; }
+        .route-highlight { font-size: 18px; font-weight: bold; color: #ffffff; }
     </style>
 </head>
 <body>
 
-    <div class="top-bar">Городской Транспорт</div>
+    <div class="top-bar" id="app-header">Городской Транспорт</div>
 
     <div id="screen-code" class="screen active">
         <div class="code-screen-container">
@@ -141,139 +94,7 @@
                 <div class="box" id="b1"></div><div class="box" id="b2"></div><div class="box" id="b3"></div>
                 <div class="box" id="b4"></div><div class="box" id="b5"></div><div class="box" id="b6"></div>
             </div>
-            <div class="hint-text">
-                <span style="font-size:15px;">⋮⋮</span> Введите код с наклейки
-            </div>
+            <div class="hint-text"><span style="font-size:15px;">⋮⋮</span> Введите код с наклейки</div>
         </div>
-        
         <div class="keyboard">
-            <button class="key" onclick="pressNum(1)">1</button><button class="key" onclick="pressNum(2)">2</button><button class="key" onclick="pressNum(3)">3</button>
-            <button class="key" onclick="pressNum(4)">4</button><button class="key" onclick="pressNum(5)">5</button><button class="key" onclick="pressNum(6)">6</button>
-            <button class="key" onclick="pressNum(7)">7</button><button class="key" onclick="pressNum(8)">8</button><button class="key" onclick="pressNum(9)">9</button>
-            <div class="key key-special"><span>Сканировать</span><span style="font-size:16px;">⋮⋮</span></div>
-            <button class="key" onclick="pressNum(0)">0</button>
-            <button class="key" style="background:#eaedf1;" onclick="pressDelete()">⌫</button>
-        </div>
-    </div>
-
-    <div id="screen-data" class="screen">
-        <div class="ticket-title-block">
-            📋 Данные билета
-        </div>
-
-        <div class="slider-container">
-            <div class="section-label" style="display: flex; align-items: center;">
-                <span class="ticket-qty-badge" id="qty-badge">1</span> Количество билетов
-            </div>
-            <div class="slider-wrapper">
-                <div class="slider-track"></div>
-                <div class="slider-dots">
-                    <div class="dot active-dot" data-val="1" onclick="setQty(1)"></div>
-                    <div class="dot" data-val="2" onclick="setQty(2)"></div>
-                    <div class="dot" data-val="3" onclick="setQty(3)"></div>
-                    <div class="dot" data-val="4" onclick="setQty(4)"></div>
-                    <div class="dot" data-val="5" onclick="setQty(5)"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="data-row">
-            <div class="row-icon">👤</div>
-            <div class="row-content">
-                <div class="section-label">Перевозчик</div>
-                <input type="text" id="inp-carrier" class="input-editable" value="ООО &quot;СКАД&quot;">
-            </div>
-        </div>
-
-        <div class="data-row">
-            <div class="row-icon">🚌</div>
-            <div class="row-content">
-                <div class="section-label">Маршрут (пример: 85, Даурская - Сельхозкомплекс)</div>
-                <input type="text" id="inp-route" class="input-editable" value="85, Даурская - Сельхозкомплекс">
-                <div class="section-label" style="margin-top: 6px;">Госномер автомобиля</div>
-                <input type="text" id="inp-plate" class="input-editable" value="р340тк124" style="color: #94a3b8;">
-            </div>
-        </div>
-
-        <div class="data-row">
-            <div class="row-icon">₽</div>
-            <div class="row-content">
-                <div class="section-label">Тариф</div>
-                <input type="text" id="inp-tariff" class="input-editable" value="Полный - 48.00 ₽">
-            </div>
-        </div>
-
-        <div class="switch-container">
-            <div class="switch-text">Создать подписку?</div>
-            <label class="switch-toggle">
-                <input type="checkbox" id="inp-sub">
-                <span class="slider-round"></span>
-            </label>
-        </div>
-
-        <button class="pay-btn" id="btn-pay" onclick="sendDataToBot()">ОПЛАТИТЬ - 48.00 ₽</button>
-    </div>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-
-        let currentCode = "";
-        let selectedQty = 1;
-        let basePrice = 48.00;
-
-        function pressNum(num) {
-            if (currentCode.length < 6) {
-                currentCode += num;
-                document.getElementById("b" + currentCode.length).innerText = num;
-                if (currentCode.length === 6) {
-                    setTimeout(() => {
-                        document.getElementById("screen-code").classList.remove("active");
-                        document.getElementById("screen-data").classList.add("active");
-                    }, 250);
-                }
-            }
-        }
-
-        function pressDelete() {
-            if (currentCode.length > 0) {
-                document.getElementById("b" + currentCode.length).innerText = "";
-                currentCode = currentCode.slice(0, -1);
-            }
-        }
-
-        function setQty(qty) {
-            selectedQty = qty;
-            document.getElementById("qty-badge").innerText = qty;
-            
-            // Смена активной точки на ползунке
-            const dots = document.querySelectorAll('.dot');
-            dots.forEach((dot, index) => {
-                if (index + 1 === qty) {
-                    dot.classList.add('active-dot');
-                } else {
-                    dot.classList.remove('active-dot');
-                }
-            });
-
-            // Динамический пересчет цены
-            let currentTotal = (basePrice * qty).toFixed(2);
-            document.getElementById("btn-pay").innerText = "ОПЛАТИТЬ - " + currentTotal + " ₽";
-        }
-
-        function sendDataToBot() {
-            const payload = {
-                qty: selectedQty,
-                carrier: document.getElementById("inp-carrier").value,
-                route: document.getElementById("inp-route").value,
-                plate: document.getElementById("inp-plate").value,
-                tariff: document.getElementById("inp-tariff").value,
-                total_price: (basePrice * selectedQty).toFixed(2)
-            };
-
-            tg.sendData(JSON.stringify(payload));
-            tg.close();
-        }
-    </script>
-</body>
-</html>
+            <button class="key" onclick="pressNum(1)">1</button><button class="key" onclick="pressNum(2
