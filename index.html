@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Городской Транспорт</title>
+    <title>Транспорт Красноярска</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        /* Оригинальная палитра приложения: глубокий темный фон Telegram */
         body {
             background-color: #0e1621;
-            color: #f5f6f7;
+            color: #ffffff;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -17,55 +16,22 @@
             -webkit-user-select: none;
             overflow-x: hidden;
         }
-        
-        /* Верхняя тонкая статусная линия (фирменный стиль) */
-        .top-line-indicator {
-            height: 2px;
-            background-color: #e53935;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 9999;
-        }
 
-        .screen { 
-            display: none; 
-            padding: 16px; 
-            margin-top: 2px;
-            box-sizing: border-box; 
-            min-height: 100vh;
-        }
+        .screen { display: none; box-sizing: border-box; min-height: 100vh; }
         .active { display: block; }
 
-        /* --- ЭКРАН 1: Ввод 6-значного кода --- */
-        .code-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 60px;
-        }
-        .code-title {
-            font-size: 16px;
-            color: #7e8b98;
-            margin-bottom: 24px;
-            font-weight: 400;
-        }
+        /* --- ЭКРАН 1: ВВОД КОДА --- */
+        .code-container { display: flex; flex-direction: column; align-items: center; margin-top: 60px; }
+        .code-title { font-size: 16px; color: #7e8b98; margin-bottom: 24px; }
         .boxes-row { display: flex; gap: 10px; margin-bottom: 45px; }
         .box-cell { 
-            width: 44px; height: 54px; 
-            border: 1px solid #2b394a; border-radius: 6px; 
-            background: transparent; text-align: center; 
-            font-size: 26px; line-height: 54px; font-weight: 500; color: #ffffff;
+            width: 44px; height: 54px; border: 1px solid #2b394a; border-radius: 6px; 
+            text-align: center; font-size: 26px; line-height: 54px; font-weight: 500; color: #ffffff;
         }
-        .stickers-hint {
-            font-size: 15px; color: #5288c1; 
-            display: flex; align-items: center; gap: 6px; cursor: pointer;
-        }
+        .stickers-hint { font-size: 15px; color: #5288c1; display: flex; align-items: center; gap: 6px; }
         .num-keyboard { 
             position: fixed; bottom: 0; left: 0; right: 0; 
-            display: grid; grid-template-columns: repeat(3, 1fr); 
-            background-color: #0e1621; border-top: 1px solid #1d2a39;
+            display: grid; grid-template-columns: repeat(3, 1fr); background-color: #0e1621;
         }
         .num-key { 
             background: #17212b; color: #ffffff; border: 0.5px solid #0e1621; 
@@ -74,84 +40,193 @@
         .num-key:active { background: #202b36; }
         .num-key-dark { background: #111923; font-size: 14px; color: #7e8b98; display: flex; flex-direction: column; justify-content: center; align-items: center; }
 
-        /* --- ЭКРАН 2: Конструктор (Форма) --- */
-        .form-header {
-            font-size: 20px; font-weight: 500; padding: 8px 0 20px 0; color: #ffffff;
-        }
-        .control-group { margin-bottom: 22px; }
-        .input-wrapper {
-            position: relative; border-bottom: 1px solid #232e3c; padding: 6px 0 10px 0; margin-bottom: 18px;
-        }
-        .field-icon {
-            position: absolute; left: 0; top: 8px; width: 24px; color: #6c7883; font-size: 18px; text-align: center;
-        }
-        .field-box { padding-left: 36px; }
-        .field-caption { color: #517ca3; font-size: 12px; font-weight: 400; margin-bottom: 2px; }
-        .field-input {
-            background: transparent; border: none; color: #ffffff; font-size: 16px; width: 100%; outline: none; font-family: inherit;
-        }
-        
-        /* Слайдер количества */
+        /* --- ЭКРАН 2: КОНСТРУКТОР --- */
+        .form-layout { padding: 16px; }
+        .form-header { font-size: 20px; font-weight: 500; padding-bottom: 20px; }
+        .input-wrapper { border-bottom: 1px solid #232e3c; padding: 6px 0 10px 0; margin-bottom: 18px; }
+        .field-caption { color: #517ca3; font-size: 12px; margin-bottom: 2px; }
+        .field-input { background: transparent; border: none; color: #ffffff; font-size: 16px; width: 100%; outline: none; }
         .qty-header { display: flex; align-items: center; gap: 8px; color: #517ca3; font-size: 13px; margin-bottom: 16px; }
-        .qty-num-badge { border: 1.5px solid #ffffff; border-radius: 3px; padding: 0px 5px; font-size: 12px; font-weight: bold; color: #ffffff; }
+        .qty-num-badge { border: 1.5px solid #ffffff; border-radius: 3px; padding: 0px 5px; font-size: 12px; font-weight: bold; }
         .slider-bar-track { position: relative; margin: 10px 8px 30px 8px; height: 2px; background: #232e3c; }
         .slider-points { display: flex; justify-content: space-between; position: absolute; width: 100%; top: -3px; }
         .point-dot { width: 8px; height: 8px; background: #232e3c; border-radius: 50%; position: relative; }
         .point-dot.selected { background: #e53935; }
-        .point-dot::after {
-            content: attr(data-label); position: absolute; top: 14px; left: 50%; transform: translateX(-50%); color: #6c7883; font-size: 12px;
-        }
-        .point-dot.selected::after { color: #ffffff; }
+        .point-dot::after { content: attr(data-label); position: absolute; top: 14px; left: 50%; transform: translateX(-50%); color: #6c7883; font-size: 12px; }
+        .action-pay-btn { position: fixed; bottom: 0; left: 0; right: 0; background-color: #2ca041; color: #ffffff; text-align: center; padding: 18px; font-size: 15px; border: none; width: 100%; cursor: pointer; }
 
-        /* Переключатель подписки */
-        .sub-row {
-            display: flex; justify-content: space-between; align-items: center; background: #17212b; padding: 14px 16px; border-radius: 8px; margin-top: 25px;
-        }
-        .sub-label { font-size: 15px; color: #ffffff; }
-        .toggle-btn { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .toggle-btn input { opacity: 0; width: 0; height: 0; }
-        .toggle-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #2b394a; transition: .2s; border-radius: 22px; }
-        .toggle-slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
-        input:checked + .toggle-slider { background-color: #e53935; }
-        input:checked + .toggle-slider:before { transform: translateX(18px); }
-        
-        .action-pay-btn {
-            position: fixed; bottom: 0; left: 0; right: 0; background-color: #2ca041; color: #ffffff; text-align: center; padding: 18px; font-size: 15px; font-weight: 500; border: none; width: 100%; cursor: pointer;
+        /* --- ЭКРАН 3: АБСОЛЮТНЫЙ ОРИГИНАЛ БИЛЕТА (1-В-1) --- */
+        .ticket-view-layout {
+            padding: 0;
+            background-color: #17212b; /* Светло-темный фон самого билета */
+            min-height: 100vh;
         }
 
-        /* --- ЭКРАН 3: ТОЧНЫЙ ОРИГИНАЛЬНЫЙ БИЛЕТ (1-в-1) --- */
-        .ticket-view-layout { padding: 12px 16px; background-color: #0e1621; }
-        .live-timer-row { display: flex; align-items: center; gap: 8px; font-size: 15px; color: #f5f6f7; margin: 6px 0 14px 0; }
-        .live-timer-row .clock-icon { color: #7e8b98; font-size: 16px; }
-        
-        .dashed-line { border-top: 1px dashed #232e3c; margin: 14px 0; width: 100%; }
-        
-        .ticket-meta-line { display: flex; justify-content: space-between; align-items: center; margin: 12px 0 24px 0; }
-        .red-num { color: #ee6055; font-size: 18px; font-weight: bold; letter-spacing: 0.5px; }
-        .badge-ctrl {
-            border: 1px solid #2b394a; color: #7e8b98; font-size: 13px; padding: 4px 10px; border-radius: 6px; display: flex; align-items: center; gap: 6px; background: transparent;
+        /* Блок таймера сверху */
+        .timer-section {
+            background-color: #0e1621; /* Глубокий темный фон шапки */
+            padding: 14px 16px 12px 16px;
+        }
+        .timer-row {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #ffffff;
+            font-weight: 400;
+        }
+        .timer-icon-blue {
+            color: #5288c1;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        .timer-text-bold {
+            font-weight: 500;
         }
 
-        .meta-block { margin-bottom: 22px; }
-        .meta-title { color: #6c7883; font-size: 13px; margin-bottom: 3px; font-weight: 400; }
-        .meta-val { color: #ffffff; font-size: 15px; font-weight: 400; line-height: 1.4; }
-        .meta-val-bold { font-size: 18px; font-weight: 500; color: #ffffff; }
+        /* Синяя бегущая полоска таймера */
+        .progress-container {
+            width: 100%;
+            height: 3px;
+            background-color: #111923;
+            margin-top: 12px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #5288c1;
+            width: 100%;
+            transition: width 1s linear;
+        }
 
-        /* Фиксированное меню кнопок в самом низу экрана билета */
-        .ticket-bottom-menu {
-            position: fixed; bottom: 0; left: 0; right: 0; background: #0e1621; padding: 12px 16px 20px 16px; display: flex; flex-direction: column; gap: 10px;
+        /* Основной контент билета */
+        .ticket-body {
+            background-color: #0e1621;
+            margin-top: 8px;
+            padding: 16px;
         }
-        .menu-btn-green {
-            background: #2ca041; color: #ffffff; border: none; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 500; text-align: center; width: 100%; box-sizing: border-box;
+
+        /* Строка "Успешно" с зеленой галочкой */
+        .status-success-row {
+            display: flex;
+            align-items: center;
+            color: #ffffff;
+            font-size: 15px;
+            font-weight: 400;
+            margin-bottom: 16px;
         }
-        .menu-btn-outline {
-            background: transparent; color: #5288c1; border: 1px solid #2b394a; border-radius: 8px; padding: 14px; font-size: 15px; font-weight: 500; text-align: center; width: 100%; box-sizing: border-box;
+        .success-circle-icon {
+            width: 18px;
+            height: 18px;
+            background-color: #2ca041;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .solid-separator {
+            border-top: 1px solid #1d2733;
+            margin: 14px 0;
+            width: 100%;
+        }
+
+        /* Строка Номера и Контроля */
+        .meta-control-line {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px 0 20px 0;
+        }
+        .red-ticket-num {
+            color: #ee6055;
+            font-size: 17px;
+            font-weight: 600;
+            font-family: -apple-system, sans-serif;
+        }
+        .btn-control-badge {
+            border: 1px solid #24303f;
+            color: #707b86;
+            font-size: 13px;
+            padding: 5px 12px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+        }
+        .grey-user-icon {
+            color: #4f5b67;
+            font-size: 14px;
+        }
+
+        /* Текстовые блоки данных */
+        .item-block {
+            margin-bottom: 18px;
+        }
+        .item-label {
+            color: #707b86;
+            font-size: 12.5px;
+            margin-bottom: 4px;
+            font-weight: 400;
+        }
+        .item-value {
+            color: #ffffff;
+            font-size: 14.5px;
+            font-weight: 400;
+            line-height: 1.3;
+        }
+        /* Жирный стиль для маршрута и госномера */
+        .item-value-bold {
+            font-size: 17px;
+            font-weight: 500;
+            color: #ffffff;
+        }
+
+        /* Фиксированные нижние кнопки 1-в-1 */
+        .fixed-bottom-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #0e1621;
+            padding: 10px 16px 24px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            border-top: 1px solid #111923;
+        }
+        .btn-bottom-green {
+            background-color: #2ca041;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            padding: 13px;
+            font-size: 14.5px;
+            font-weight: 500;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .btn-bottom-transparent {
+            background-color: transparent;
+            color: #5288c1;
+            border: 1px solid #24303f;
+            border-radius: 6px;
+            padding: 13px;
+            font-size: 14.5px;
+            font-weight: 500;
+            text-align: center;
+            width: 100%;
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-
-    <div class="top-line-indicator"></div>
 
     <div id="screen-code" class="screen active">
         <div class="code-container">
@@ -160,124 +235,95 @@
                 <div class="box-cell" id="c1"></div><div class="box-cell" id="c2"></div><div class="box-cell" id="c3"></div>
                 <div class="box-cell" id="c4"></div><div class="box-cell" id="c5"></div><div class="box-cell" id="c6"></div>
             </div>
-            <div class="stickers-hint">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect></svg>
-                <span>Показать где наклейка</span>
-            </div>
+            <div class="stickers-hint"><span>Показать где наклейка</span></div>
         </div>
         <div class="num-keyboard">
             <button class="num-key" onclick="tapKey(1)">1</button><button class="num-key" onclick="tapKey(2)">2</button><button class="num-key" onclick="tapKey(3)">3</button>
             <button class="num-key" onclick="tapKey(4)">4</button><button class="num-key" onclick="tapKey(5)">5</button><button class="num-key" onclick="tapKey(6)">6</button>
             <button class="num-key" onclick="tapKey(7)">7</button><button class="num-key" onclick="tapKey(8)">8</button><button class="num-key" onclick="tapKey(9)">9</button>
-            <div class="num-key num-key-dark"><span>Сканировать</span><strong>[ ]</strong></div>
+            <div class="num-key num-key-dark"><span>Сканировать</span></div>
             <button class="num-key" onclick="tapKey(0)">0</button>
             <button class="num-key" style="background:#131c26; color:#7e8b98;" onclick="tapDelete()">⌫</button>
         </div>
     </div>
 
-    <div id="screen-data" class="screen">
+    <div id="screen-data" class="screen form-layout">
         <div class="form-header">Параметры поездки</div>
-        
-        <div class="control-group">
-            <div class="qty-header">
-                <span class="qty-num-badge" id="badge-count">1</span> Количество билетов
-            </div>
-            <div class="slider-bar-track">
-                <div class="slider-points">
-                    <div class="point-dot selected" data-label="1" onclick="selectPointsCount(1)"></div>
-                    <div class="point-dot" data-label="2" onclick="selectPointsCount(2)"></div>
-                    <div class="point-dot" data-label="3" onclick="selectPointsCount(3)"></div>
-                    <div class="point-dot" data-label="4" onclick="selectPointsCount(4)"></div>
-                    <div class="point-dot" data-label="5" onclick="selectPointsCount(5)"></div>
-                </div>
+        <div class="qty-header"><span class="qty-num-badge" id="badge-count">1</span> Количество билетов</div>
+        <div class="slider-bar-track">
+            <div class="slider-points">
+                <div class="point-dot selected" data-label="1" onclick="selectPointsCount(1)"></div>
+                <div class="point-dot" data-label="2" onclick="selectPointsCount(2)"></div>
+                <div class="point-dot" data-label="3" onclick="selectPointsCount(3)"></div>
+                <div class="point-dot" data-label="4" onclick="selectPointsCount(4)"></div>
+                <div class="point-dot" data-label="5" onclick="selectPointsCount(5)"></div>
             </div>
         </div>
-
-        <div class="input-wrapper">
-            <div class="field-icon">👤</div>
-            <div class="field-box">
-                <div class="field-caption">Перевозчик</div>
-                <input type="text" id="v-carrier" class="field-input" value="ООО &quot;СКАД&quot;">
-            </div>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="field-icon">🚌</div>
-            <div class="field-box">
-                <div class="field-caption">Маршрут</div>
-                <input type="text" id="v-route" class="field-input" value="85, Даурская - Сельхозкомплекс">
-            </div>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="field-icon">🔢</div>
-            <div class="field-box">
-                <div class="field-caption">Госномер автомобиля</div>
-                <input type="text" id="v-plate" class="field-input" value="р340тк124">
-            </div>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="field-icon">₽</div>
-            <div class="field-box">
-                <div class="field-caption">Тариф</div>
-                <input type="text" id="v-tariff" class="field-input" value="Полный - 48.00 ₽">
-            </div>
-        </div>
-
-        <div class="sub-row">
-            <div class="sub-label">Создать подписку?</div>
-            <label class="toggle-btn"><input type="checkbox"><span class="toggle-slider"></span></label>
-        </div>
-
+        <div class="input-wrapper"><div class="field-caption">Перевозчик</div><input type="text" id="v-carrier" class="field-input" value="ООО &quot;СКАД&quot;"></div>
+        <div class="input-wrapper"><div class="field-caption">Маршрут</div><input type="text" id="v-route" class="field-input" value="85, Даурская - Сельхозкомплекс"></div>
+        <div class="input-wrapper"><div class="field-caption">Госномер автомобиля</div><input type="text" id="v-plate" class="field-input" value="р340тк124"></div>
+        <div class="input-wrapper"><div class="field-caption">Тариф</div><input type="text" id="v-tariff" class="field-input" value="Полный - 48.00 ₽"></div>
         <button class="action-pay-btn" id="pay-submit-label" onclick="buildAndRenderTicket()">ОПЛАТИТЬ - 48.00 ₽</button>
     </div>
 
     <div id="screen-ticket" class="screen ticket-view-layout">
-        <div class="live-timer-row">
-            <span class="clock-icon">⏳</span>
-            <span>Действует: <span id="dyn-sec" style="font-weight: 500;">14</span> <span id="dyn-word">сек.</span></span>
-        </div>
         
-        <div class="dashed-line"></div>
-        
-        <div class="ticket-meta-line">
-            <span class="red-num" id="render-num">№ 532194875</span>
-            <span class="badge-ctrl">👤 Контроль</span>
+        <div class="timer-section">
+            <div class="timer-row">
+                <span class="timer-icon-blue">🕒</span>
+                <span>Действует: <span id="dyn-sec" class="timer-text-bold">14</span> <span id="dyn-word" class="timer-text-bold">сек.</span></span>
+            </div>
+            <div class="progress-container">
+                <div class="progress-bar-fill" id="blue-progress"></div>
+            </div>
         </div>
 
-        <div class="meta-block">
-            <div class="meta-title">Перевозчик</div>
-            <div class="meta-val" id="render-carrier">ООО "СКАД"</div>
+        <div class="ticket-body">
+            <div class="status-success-row">
+                <div class="success-circle-icon">✓</div>
+                <span>Билет куплен успешно.</span>
+            </div>
+
+            <div class="solid-separator"></div>
+
+            <div class="meta-control-line">
+                <span class="red-ticket-num" id="render-num">№ 102485961</span>
+                <button class="btn-control-badge"><span class="grey-user-icon">👤</span> Контроль</button>
+            </div>
+
+            <div class="item-block">
+                <div class="item-label">Перевозчик</div>
+                <div class="item-value" id="render-carrier"></div>
+            </div>
+
+            <div class="item-block">
+                <div class="item-label">Маршрут</div>
+                <div class="item-value item-value-bold" id="render-route"></div>
+                <div class="item-value item-value-bold" id="render-plate" style="margin-top: 2px;"></div>
+            </div>
+
+            <div class="item-block">
+                <div class="item-label">Стоимость</div>
+                <div class="item-value" id="render-cost"></div>
+            </div>
+
+            <div class="item-block">
+                <div class="item-label">Дата покупки</div>
+                <div class="item-value" id="render-date"></div>
+            </div>
+
+            <div class="item-block">
+                <div class="item-label">Время покупки</div>
+                <div class="item-value" id="render-time"></div>
+            </div>
+
+            <div class="solid-separator" style="margin-top: 30px; opacity: 0.5;"></div>
         </div>
 
-        <div class="meta-block">
-            <div class="meta-title">Маршрут</div>
-            <div class="meta-val meta-val-bold" id="render-route">85, Даурская - Сельхозкомплекс</div>
-            <div class="meta-val meta-val-bold" id="render-plate" style="margin-top: 1px;">р340тк124</div>
-        </div>
-
-        <div class="meta-block">
-            <div class="meta-title">Стоимость</div>
-            <div class="meta-val" id="render-cost">1 шт., Полный - 48.00 ₽</div>
-        </div>
-
-        <div class="meta-block">
-            <div class="meta-title">Дата покупки</div>
-            <div class="meta-val" id="render-date">25 мая 2026 г.</div>
-        </div>
-
-        <div class="meta-block">
-            <div class="meta-title">Время покупки</div>
-            <div class="meta-val" id="render-time">16:34</div>
-        </div>
-
-        <div class="dashed-line" style="margin-top: 25px;"></div>
-
-        <div class="ticket-bottom-menu">
-            <button class="menu-btn-green">Предъявить билет</button>
-            <button class="menu-btn-outline">Предъявить QR</button>
-            <button class="menu-btn-outline">Предъявить билет в чат</button>
+        <div class="fixed-bottom-panel">
+            <button class="btn-bottom-green">Предъявить билет</button>
+            <button class="btn-bottom-transparent">Предъявить QR</button>
+            <button class="btn-bottom-transparent">Предъявить билет в чат</button>
         </div>
     </div>
 
@@ -322,13 +368,11 @@
         }
 
         function buildAndRenderTicket() {
-            // Считывание значений из конфигуратора
             const carrierVal = document.getElementById("v-carrier").value;
             const routeVal = document.getElementById("v-route").value;
             const plateVal = document.getElementById("v-plate").value;
             const tariffVal = document.getElementById("v-tariff").value;
 
-            // Время и календарные данные
             const currentObj = new Date();
             const padH = String(currentObj.getHours()).padStart(2, '0');
             const padM = String(currentObj.getMinutes()).padStart(2, '0');
@@ -336,7 +380,7 @@
             const monthsArray = ["янв.", "фев.", "мар.", "апр.", "мая", "июня", "июля", "авг.", "сент.", "окт.", "нояб.", "дек."];
             const structuredDate = currentObj.getDate() + " " + monthsArray[currentObj.getMonth()] + " " + currentObj.getFullYear() + " г.";
 
-            // Заполнение шаблона билета данными пользователя
+            // Заполняем данными
             document.getElementById("render-carrier").innerText = carrierVal;
             document.getElementById("render-route").innerText = routeVal;
             document.getElementById("render-plate").innerText = plateVal;
@@ -345,26 +389,33 @@
             document.getElementById("render-time").innerText = padH + ":" + padM;
             document.getElementById("render-num").innerText = "№ " + Math.floor(100000000 + Math.random() * 900000000);
 
-            // Переключение экранов мини-приложения
+            // Переключаем экран
             document.getElementById("screen-data").classList.remove("active");
             document.getElementById("screen-ticket").classList.add("active");
 
-            // Запуск таймера обратного отсчета (показывает 14 сек на старте)
+            // Запускаем таймер (14 сек) и синюю полоску прогресса
             let remaining = 14;
+            const totalDuration = 14;
+            
             const liveCounter = setInterval(() => {
                 remaining--;
                 document.getElementById("dyn-sec").innerText = remaining;
                 
-                // Склонение слова сек/секунда
-                if (remaining === 1) {
-                    document.getElementById("dyn-word").innerText = "сек.";
-                }
+                // Рассчитываем процент сжатия полоски
+                let progressPercent = (remaining / totalDuration) * 100;
+                document.getElementById("blue-progress").style.width = progressPercent + "%";
 
                 if (remaining <= 0) {
                     clearInterval(liveCounter);
-                    tg.close(); // Закрываем по истечении времени контроля
+                    tg.close(); // Скрываем Mini App по окончанию контроля
                 }
             }, 1000);
+
+            // Дублируем JSON-строку обратно боту
+            const payload = {
+                qty: globalQty, route: routeVal, carrier: carrierVal, plate: plateVal, tariff: tariffVal, time_purchase: padH + ":" + padM
+            };
+            tg.sendData(JSON.stringify(payload));
         }
     </script>
 </body>
